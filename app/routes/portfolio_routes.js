@@ -54,4 +54,21 @@ router.post('/portfolio', requireToken, (req, res, next) => {
 		.catch(next)
 })
 
+
+// DELETE
+
+// DELETE / portfolio
+
+router.delete('/portfolio', requireToken, (req,res,next) => {
+    Portfolio.find({owner: req.user._id})
+        .then(handle404)
+        .then(portfolio => {
+            requireOwnership(req,portfolio[0])
+            portfolio[0].deleteOne()
+        })
+        .then(()=>res.sendStatus(204))
+        .catch(next)
+})
+
+
 module.exports = router
