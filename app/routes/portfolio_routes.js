@@ -27,6 +27,18 @@ const requireToken = passport.authenticate('bearer', { session: false })
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
 
+// SHOW
+// GET /portfolio
+router.get('/portfolio', requireToken, (req, res, next) => {
+  Portfolio.find({ owner: req.user.id })
+    //if no portfolio is found
+    .then(handle404)
+    // respond with status 200 and JSON of the favorites
+    .then((portfolio) => res.status(200).json({ portfolio: portfolio }))
+    // if an error occurs, pass it to the handler
+    .catch(next)
+})
+
 // CREATE
 // POST /portfolio
 router.post('/portfolio', requireToken, (req, res, next) => {
