@@ -7,6 +7,7 @@ const cors = require('cors')
 const favoriteRoutes = require('./app/routes/favorite_routes')
 const userRoutes = require('./app/routes/user_routes')
 const portfolioRoutes = require('./app/routes/portfolio_routes')
+const coinRoutes = require('./app/routes/coin_routes')
 
 // require middleware
 const errorHandler = require('./lib/error_handler')
@@ -68,6 +69,7 @@ app.use(requestLogger)
 // register route files
 app.use(favoriteRoutes)
 app.use(portfolioRoutes)
+app.use(coinRoutes)
 app.use(userRoutes)
 
 // register error handling middleware
