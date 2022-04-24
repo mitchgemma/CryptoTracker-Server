@@ -20,6 +20,7 @@ const requireOwnership = customErrors.requireOwnership
 // this is middleware that will remove blank fields from `req.body`, e.g.
 // { example: { title: '', text: 'foo' } } -> { example: { text: 'foo' } }
 const removeBlanks = require('../../lib/remove_blank_fields')
+const portfolio = require('../models/portfolio')
 // passing this as a second argument to `router.<verb>` will make it
 // so that a token MUST be passed for that route to be available
 // it will also set `req.user`
@@ -108,5 +109,20 @@ router.patch('/coin/:id', requireToken, removeBlanks, (req, res, next) => {
         .catch(next)
   })
   
+
+//   SHOW -> show coin
+//   GET / coin
+  router.get('/coin/:id', requireToken, (req,res,next) => {
+      const coinId = req.params.id
+      Portfolio.find({owner: req.user.id})
+        .then(handle404)
+        .then((portfolio) => {
+            const theCoin = portfolio[0].assets.id(coinId)
+            // respond with status 200 and JSON of the favorites
+            res.status(200).json({coin:theCoin})
+        })
+        //if an error occurs, pass it to the handler
+        .catch(next)
+  })
 
 module.exports = router
