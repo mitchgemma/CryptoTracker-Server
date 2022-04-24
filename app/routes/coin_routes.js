@@ -87,4 +87,26 @@ router.delete('/coin/:id', requireToken, (req, res, next) => {
 })
 
 
+// UPDATE -> updates coin data in assets
+// PATCH /coin
+router.patch('/coin/:id', requireToken, removeBlanks, (req, res, next) => {
+    const coinId = req.params.id
+    Portfolio.find({ owner: req.user.id })
+        //if Portfolio isn't found, throw 404
+        .then(handle404)
+        //Portfolio found
+        .then(portfolio => {
+            // get the specific subdocument by its id
+            const theCoin = portfolio[0].assets.id(coinId)
+            requireOwnership(req, portfolio[0])
+            theCoin.set(req.body.coin)
+
+            return portfolio[0].save()
+        })
+        // send 204 no content
+        .then(() => res.sendStatus(204))
+        .catch(next)
+  })
+  
+
 module.exports = router
