@@ -64,4 +64,27 @@ router.post('/coin', requireToken, (req, res, next) => {
 })
 
 
+// DELETE -> removes a coin from assets
+// DELETE /coin
+router.delete('/coin/:id', requireToken, (req, res, next) => {
+    const coinId = req.params.id
+	Portfolio.find({owner:req.user.id})
+    // removes coin from assets
+    .then((portfolio)=> {
+        const coinToDelete = portfolio[0].assets.id(coinId)
+        requireOwnership(req, portfolio[0])
+        coinToDelete.remove()
+        return portfolio[0].save()
+    })
+    // respond to succesful `create` with status 201 and JSON of new "portfolio"
+		.then((portfolio) => {
+			res.status(201).json({ portfolio: portfolio })
+		})
+		// if an error occurs, pass it off to our error handler
+		// the error handler needs the error message and the `res` object so that it
+		// can send an error message back to the client
+		.catch(next)
+})
+
+
 module.exports = router
