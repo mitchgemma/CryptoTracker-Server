@@ -29,10 +29,12 @@ const router = express.Router()
 
 // INDEX
 // GET /favorites
-router.get('/favorites', requireToken, (req, res, next) => {
+router.get('/favorites/:id', requireToken, (req, res, next) => {
+  console.log('our req.params', req.params.id)
   const userId = req.data
+  const coin = req.params.id
   console.log('our userId', req.user._id)
-  Favorite.find({ owner: req.user._id })
+  Favorite.find({ $and: [{ owner: req.user.id }, { coinGeckId: coin }] })
     .then((favorites) => {
       console.log('our favorites', favorites)
       return favorites.map((favorite) => favorite.toObject())
@@ -43,13 +45,31 @@ router.get('/favorites', requireToken, (req, res, next) => {
     .catch(next)
 })
 
+// // INDEX
+// // GET /favorites
+// router.get('/favorites/:id', requireToken, (req, res, next) => {
+//   console.log('our req.body', req.body)
+//   const userId = req.data
+//   const coin = req.body.favorite.coinGeckId
+//   console.log('our userId', req.user._id)
+//   Favorite.find({ $and: [{ owner: req.user.id }, { coinGeckId: coin }] })
+//     .then((favorites) => {
+//       console.log('our favorites', favorites)
+//       return favorites.map((favorite) => favorite.toObject())
+//     })
+//     // respond with status 200 and JSON of the favorites
+//     .then((favorites) => res.status(200).json({ favorites: favorites }))
+//     // if an error occurs, pass it to the handler
+//     .catch(next)
+// })
+
 // CREATE
 // POST /favorites
-router.post('/favorites', requireToken, (req, res, next) => {
+router.post('/favorites/:id', requireToken, (req, res, next) => {
   // set owner of new favorite to be current user
   // console.log('req.bbody', req.body.favorite)
   const createObject = {
-    coinGeckId: req.body.favorite.id,
+    coinGeckId: req.params.id,
     owner: req.user.id,
   }
   Favorite.create(createObject)
@@ -65,8 +85,9 @@ router.post('/favorites', requireToken, (req, res, next) => {
 
 // DESTROY
 // DELETE /favorites
-router.delete('/favorites', requireToken, (req, res, next) => {
-  const coin = req.body.favorite.coinGeckId
+router.delete('/favorites/:id', requireToken, (req, res, next) => {
+  // const coin = req.body.favorite.coinGeckId
+  const coin = req.params.id
   console.log('coin', coin)
   console.log('this is the req.body', req.body)
   // Favorite.find({ coinGeckId: coin })
