@@ -47,9 +47,12 @@ router.get('/favorites', requireToken, (req, res, next) => {
 // POST /favorites
 router.post('/favorites', requireToken, (req, res, next) => {
   // set owner of new favorite to be current user
-  req.body.favorite.owner = req.user.id
-
-  Favorite.create(req.body.favorite)
+  // console.log('req.bbody', req.body.favorite)
+  const createObject = {
+    coinGeckId: req.body.favorite.id,
+    owner: req.user.id,
+  }
+  Favorite.create(createObject)
     // respond to succesful `create` with status 201 and JSON of new "favorite"
     .then((favorite) => {
       res.status(201).json({ favorite: favorite.toObject() })
