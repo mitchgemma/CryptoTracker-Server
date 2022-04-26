@@ -27,4 +27,20 @@ const requireToken = passport.authenticate('bearer', { session: false })
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
 
+// CREATE
+// POST /transaction
+router.post('/transaction', requireToken, (req, res, next) => {
+    req.body.transaction.owner = req.user.id
+	Transaction.create(req.body.transaction)
+		// respond to succesful `create` with status 201 and JSON of new "portfolio"
+		.then((transaction) => {
+			res.status(201).json({ transaction: transaction.toObject() })
+		})
+		// if an error occurs, pass it off to our error handler
+		// the error handler needs the error message and the `res` object so that it
+		// can send an error message back to the client
+		.catch(next)
+})
+
+
 module.exports = router
