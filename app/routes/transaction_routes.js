@@ -91,6 +91,24 @@ router.patch('/transaction/tid/:transId', requireToken, removeBlanks, (req, res,
         .catch(next)
   })
   
+// DELETE -> removes transaction
+// DELETE /transaction/tid/:transId
+router.delete('/transaction/tid/:transId', requireToken, (req, res, next) => {
+    const transId = req.params.transId
+	Transaction.findById(transId)
+    //removes transaction 
+    .then((transaction)=> {
+        requireOwnership(req, transaction)
+        return transaction.remove()
+    })
+		.then((transaction) => {
+			res.status(201).json({ transaction: transaction })
+		})
+		// if an error occurs, pass it off to our error handler
+		// the error handler needs the error message and the `res` object so that it
+		// can send an error message back to the client
+		.catch(next)
+})
 
 
 module.exports = router
