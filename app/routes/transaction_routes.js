@@ -71,5 +71,26 @@ router.get('/transaction/tid/:transId', requireToken, (req, res, next) => {
       .catch(next)
   })
 
+  // UPDATE -> updates transaction
+// PATCH /transaction/tid/:transId
+router.patch('/transaction/tid/:transId', requireToken, removeBlanks, (req, res, next) => {
+    const transId = req.params.transId
+    Transaction.findById(transId)
+        //if Transaction isn't found, throw 404
+        .then(handle404)
+        //Transaction found
+        .then(transaction => {
+            // checks if user is owner
+            requireOwnership(req, transaction)
+            // updates and saves transaction
+            transaction.set(req.body.transaction)
+            return transaction.save()
+        })
+        // send 204 no content
+        .then(() => res.sendStatus(204))
+        .catch(next)
+  })
+  
+
 
 module.exports = router
