@@ -27,7 +27,7 @@ const requireToken = passport.authenticate('bearer', { session: false })
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
 
-// CREATE
+// CREATE -> creates a new transaction 
 // POST /transaction
 router.post('/transaction', requireToken, (req, res, next) => {
     req.body.transaction.owner = req.user.id
@@ -42,5 +42,18 @@ router.post('/transaction', requireToken, (req, res, next) => {
 		.catch(next)
 })
 
+
+// SHOW coin transaction -> displays tranactions for a coin
+// GET /transaction/:coin
+router.get('/transaction/:coin', requireToken, (req, res, next) => {
+    const coin = req.params.coin
+    Transaction.find({ $and: [{ owner: req.user.id }, { coinGeckId: coin }] })
+      //if no transaction is found
+      .then(handle404)
+      // respond with status 200 and JSON of the favorites
+      .then((transaction) => res.status(200).json({ transaction: transaction }))
+      // if an error occurs, pass it to the handler
+      .catch(next)
+  })
 
 module.exports = router
