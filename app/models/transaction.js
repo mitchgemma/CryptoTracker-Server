@@ -6,17 +6,22 @@ const mongoose = require('mongoose')
 
 const transactionSchema = new mongoose.Schema(
 	{
-		name: {
+		coinGeckId: {
 			type: String,
 			required: true,
 		},
-		quantity: {
-			type: Number,
+		type: {
+			type: String,
 			required: true
 		},
 		price: {
 			type: Number,
 			required: true
+		},
+		amount: {
+			type: Number,
+			required: true,
+			min: 0
 		},
 		datetime: {
 			type: Date,
