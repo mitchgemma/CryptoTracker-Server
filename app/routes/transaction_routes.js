@@ -56,4 +56,20 @@ router.get('/transaction/:coin', requireToken, (req, res, next) => {
       .catch(next)
   })
 
+// SHOW single transaction -> displays individual transaction
+// GET /transaction/tid/:transId
+router.get('/transaction/tid/:transId', requireToken, (req, res, next) => {
+    // transId == transaction id
+    const transId = req.params.transId
+    console.log('transId',req.params)
+    Transaction.findById(transId)
+      //if no transaction is found
+      .then(handle404)
+      // respond with status 200 and JSON of the favorites
+      .then((transaction) => res.status(200).json({ transaction: transaction }))
+      // if an error occurs, pass it to the handler
+      .catch(next)
+  })
+
+
 module.exports = router
