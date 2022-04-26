@@ -111,4 +111,18 @@ router.delete('/transaction/tid/:transId', requireToken, (req, res, next) => {
 })
 
 
+// DELETE all coin transactions -> removes ALL coin transaction
+// DELETE /transaction/:coin
+router.delete('/transaction/:coin', requireToken, (req, res, next) => {
+    const coin = req.params.coin
+	Transaction.deleteMany({ $and: [{ owner: req.user.id }, { coinGeckId: coin }] })
+        .then((transaction) => {
+            res.status(201).json({ transaction: transaction })
+        })
+		// if an error occurs, pass it off to our error handler
+		// the error handler needs the error message and the `res` object so that it
+		// can send an error message back to the client
+		.catch(next)
+})
+
 module.exports = router
