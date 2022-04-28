@@ -27,102 +27,108 @@ const requireToken = passport.authenticate('bearer', { session: false })
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
 
-// CREATE -> creates a new transaction 
+// CREATE -> creates a new transaction
 // POST /transaction
 router.post('/transaction', requireToken, (req, res, next) => {
-    req.body.transaction.owner = req.user.id
-	Transaction.create(req.body.transaction)
-		// respond to succesful `create` with status 201 and JSON of new "portfolio"
-		.then((transaction) => {
-			res.status(201).json({ transaction: transaction.toObject() })
-		})
-		// if an error occurs, pass it off to our error handler
-		// the error handler needs the error message and the `res` object so that it
-		// can send an error message back to the client
-		.catch(next)
+  req.body.transaction.owner = req.user.id
+  Transaction.create(req.body.transaction)
+    // respond to succesful `create` with status 201 and JSON of new "portfolio"
+    .then((transaction) => {
+      res.status(201).json({ transaction: transaction.toObject() })
+    })
+    // if an error occurs, pass it off to our error handler
+    // the error handler needs the error message and the `res` object so that it
+    // can send an error message back to the client
+    .catch(next)
 })
-
 
 // SHOW coin transaction -> displays tranactions for a coin
 // GET /transaction/:coin
 router.get('/transaction/:coin', requireToken, (req, res, next) => {
-    const coin = req.params.coin
-    Transaction.find({ $and: [{ owner: req.user.id }, { coinGeckId: coin }] })
-      //if no transaction is found
-      .then(handle404)
-      // respond with status 200 and JSON of the favorites
-      .then((transaction) => res.status(200).json({ transaction: transaction }))
-      // if an error occurs, pass it to the handler
-      .catch(next)
-  })
+  const coin = req.params.coin
+  Transaction.find({ $and: [{ owner: req.user.id }, { coinGeckId: coin }] })
+    //if no transaction is found
+    .then(handle404)
+    // respond with status 200 and JSON of the favorites
+    .then((transaction) => res.status(200).json({ transaction: transaction }))
+    // if an error occurs, pass it to the handler
+    .catch(next)
+})
 
 // SHOW single transaction -> displays individual transaction
 // GET /transaction/tid/:transId
 router.get('/transaction/tid/:transId', requireToken, (req, res, next) => {
-    // transId == transaction id
-    const transId = req.params.transId
-    console.log('transId',req.params)
-    Transaction.findById(transId)
-      //if no transaction is found
-      .then(handle404)
-      // respond with status 200 and JSON of the favorites
-      .then((transaction) => res.status(200).json({ transaction: transaction }))
-      // if an error occurs, pass it to the handler
-      .catch(next)
-  })
+  // transId == transaction id
+  const transId = req.params.transId
+  console.log('transId', req.params)
+  Transaction.findById(transId)
+    //if no transaction is found
+    .then(handle404)
+    // respond with status 200 and JSON of the favorites
+    .then((transaction) => res.status(200).json({ transaction: transaction }))
+    // if an error occurs, pass it to the handler
+    .catch(next)
+})
 
-  // UPDATE -> updates transaction
+// UPDATE -> updates transaction
 // PATCH /transaction/tid/:transId
-router.patch('/transaction/tid/:transId', requireToken, removeBlanks, (req, res, next) => {
+router.patch(
+  '/transaction/tid/:transId',
+  requireToken,
+  removeBlanks,
+  (req, res, next) => {
     const transId = req.params.transId
+    console.log('req.body', req.body)
     Transaction.findById(transId)
-        //if Transaction isn't found, throw 404
-        .then(handle404)
-        //Transaction found
-        .then(transaction => {
-            // checks if user is owner
-            requireOwnership(req, transaction)
-            // updates and saves transaction
-            transaction.set(req.body.transaction)
-            return transaction.save()
-        })
-        // send 204 no content
-        .then(() => res.sendStatus(204))
-        .catch(next)
-  })
-  
+      //if Transaction isn't found, throw 404
+      .then(handle404)
+      //Transaction found
+      .then((transaction) => {
+        // checks if user is owner
+        requireOwnership(req, transaction)
+        // updates and saves transaction
+        transaction.set(req.body.transaction)
+        return transaction.save()
+      })
+      // send 204 no content
+      .then(() => res.sendStatus(204))
+      .catch(next)
+  }
+)
+
 // DELETE -> removes transaction
 // DELETE /transaction/tid/:transId
 router.delete('/transaction/tid/:transId', requireToken, (req, res, next) => {
-    const transId = req.params.transId
-	Transaction.findById(transId)
-    //removes transaction 
-    .then((transaction)=> {
-        requireOwnership(req, transaction)
-        return transaction.remove()
+  const transId = req.params.transId
+  Transaction.findById(transId)
+    //removes transaction
+    .then((transaction) => {
+      requireOwnership(req, transaction)
+      return transaction.remove()
     })
-		.then((transaction) => {
-			res.status(201).json({ transaction: transaction })
-		})
-		// if an error occurs, pass it off to our error handler
-		// the error handler needs the error message and the `res` object so that it
-		// can send an error message back to the client
-		.catch(next)
+    .then((transaction) => {
+      res.status(201).json({ transaction: transaction })
+    })
+    // if an error occurs, pass it off to our error handler
+    // the error handler needs the error message and the `res` object so that it
+    // can send an error message back to the client
+    .catch(next)
 })
-
 
 // DELETE all coin transactions -> removes ALL coin transaction
 // DELETE /transaction/:coin
 router.delete('/transaction/:coin', requireToken, (req, res, next) => {
-    const coin = req.params.coin
-	Transaction.deleteMany({ $and: [{ owner: req.user.id }, { coinGeckId: coin }] })
-        .then((transaction) => {
-            res.status(201).json({ transaction: transaction })
-        })
-		// if an error occurs, pass it off to our error handler
-		// the error handler needs the error message and the `res` object so that it
-		// can send an error message back to the client
-		.catch(next)
+  const coin = req.params.coin
+  Transaction.deleteMany({
+    $and: [{ owner: req.user.id }, { coinGeckId: coin }],
+  })
+    .then((transaction) => {
+      res.status(201).json({ transaction: transaction })
+    })
+    // if an error occurs, pass it off to our error handler
+    // the error handler needs the error message and the `res` object so that it
+    // can send an error message back to the client
+    .catch(next)
 })
 
 module.exports = router

@@ -42,33 +42,31 @@ router.get('/portfolio', requireToken, (req, res, next) => {
 // CREATE
 // POST /portfolio
 router.post('/portfolio', requireToken, (req, res, next) => {
-    req.body.portfolio.owner = req.user.id
-	Portfolio.create(req.body.portfolio)
-		// respond to succesful `create` with status 201 and JSON of new "portfolio"
-		.then((portfolio) => {
-			res.status(201).json({ portfolio: portfolio.toObject() })
-		})
-		// if an error occurs, pass it off to our error handler
-		// the error handler needs the error message and the `res` object so that it
-		// can send an error message back to the client
-		.catch(next)
+  req.body.portfolio.owner = req.user.id
+  Portfolio.create(req.body.portfolio)
+    // respond to succesful `create` with status 201 and JSON of new "portfolio"
+    .then((portfolio) => {
+      res.status(201).json({ portfolio: portfolio.toObject() })
+    })
+    // if an error occurs, pass it off to our error handler
+    // the error handler needs the error message and the `res` object so that it
+    // can send an error message back to the client
+    .catch(next)
 })
-
 
 // DELETE
 
 // DELETE / portfolio
 
-router.delete('/portfolio', requireToken, (req,res,next) => {
-    Portfolio.find({owner: req.user._id})
-        .then(handle404)
-        .then(portfolio => {
-            requireOwnership(req,portfolio[0])
-            portfolio[0].deleteOne()
-        })
-        .then(()=>res.sendStatus(204))
-        .catch(next)
+router.delete('/portfolio', requireToken, (req, res, next) => {
+  Portfolio.find({ owner: req.user._id })
+    .then(handle404)
+    .then((portfolio) => {
+      requireOwnership(req, portfolio[0])
+      portfolio[0].deleteOne()
+    })
+    .then(() => res.sendStatus(204))
+    .catch(next)
 })
-
 
 module.exports = router
