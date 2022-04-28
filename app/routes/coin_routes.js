@@ -45,8 +45,8 @@ router.post('/coin', requireToken, (req, res, next) => {
         // updates coin in portfolio assets
         if (assetIndex>-1) {
             let assetCoin = assets[assetIndex]
-            assetCoin.avgPrice = (assetCoin.avgPrice+coin.avgPrice)/2
-            assetCoin.quantity += coin.quantity
+            assetCoin.avgPrice = coin.avgPrice
+            assetCoin.quantity = coin.quantity
         }
         // adds coin to portfolio assets
         else {

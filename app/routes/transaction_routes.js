@@ -42,6 +42,18 @@ router.post('/transaction', requireToken, (req, res, next) => {
 		.catch(next)
 })
 
+// SHOW coin purchased transactions -> displays user's purchased transactions for a coin
+// GET /transaction/buy/:id
+router.get('/transaction/buy/:coin', requireToken, (req, res, next) => {
+    const coin = req.params.coin
+    Transaction.find({ $and: [{ owner: req.user.id }, { type: "buy" }, {coinGeckId:coin}] })
+      //if no transaction is found
+      .then(handle404)
+      // respond with status 200 and JSON of the favorites
+      .then((transaction) => res.status(200).json({ transaction: transaction }))
+      // if an error occurs, pass it to the handler
+      .catch(next)
+  })
 
 // SHOW coin transaction -> displays tranactions for a coin
 // GET /transaction/:coin
