@@ -27,7 +27,7 @@ const requireToken = passport.authenticate('bearer', { session: false })
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
 
-// INDEX
+// SHOW
 // GET /favorites
 router.get('/favorites/:id', requireToken, (req, res, next) => {
   console.log('our req.params', req.params.id)
@@ -47,21 +47,19 @@ router.get('/favorites/:id', requireToken, (req, res, next) => {
 
 // // INDEX
 // // GET /favorites
-// router.get('/favorites/:id', requireToken, (req, res, next) => {
-//   console.log('our req.body', req.body)
-//   const userId = req.data
-//   const coin = req.body.favorite.coinGeckId
-//   console.log('our userId', req.user._id)
-//   Favorite.find({ $and: [{ owner: req.user.id }, { coinGeckId: coin }] })
-//     .then((favorites) => {
-//       console.log('our favorites', favorites)
-//       return favorites.map((favorite) => favorite.toObject())
-//     })
-//     // respond with status 200 and JSON of the favorites
-//     .then((favorites) => res.status(200).json({ favorites: favorites }))
-//     // if an error occurs, pass it to the handler
-//     .catch(next)
-// })
+router.get('/favorites', requireToken, (req, res, next) => {
+  const userId = req.data
+  console.log('our userId', req.user._id)
+  Favorite.find({ owner: req.user._id })
+    .then((favorites) => {
+      console.log('our favorites', favorites)
+      return favorites.map((favorite) => favorite.toObject())
+    })
+    // respond with status 200 and JSON of the favorites
+    .then((favorites) => res.status(200).json({ favorites: favorites }))
+    // if an error occurs, pass it to the handler
+    .catch(next)
+})
 
 // CREATE
 // POST /favorites
