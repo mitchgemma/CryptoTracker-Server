@@ -3,7 +3,7 @@ const express = require('express')
 // Passport docs: http://www.passportjs.org/docs/
 const passport = require('passport')
 
-// pull in Mongoose model for examples
+// pull in Mongoose model for transactions
 const Transaction = require('../models/transaction')
 
 // this is a collection of methods that help us detect situations when we need
