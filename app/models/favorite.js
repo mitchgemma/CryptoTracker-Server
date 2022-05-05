@@ -4,8 +4,7 @@ const favoriteSchema = new mongoose.Schema(
   {
     coinGeckId: {
       type: String,
-      required: true,
-      unique: true,
+      required: true
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
